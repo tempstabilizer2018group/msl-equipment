@@ -11,7 +11,7 @@ from .structs import PS5000ATriggerInfo
 from .. import c_enum
 
 
-@register(manufacturer=r'Pico\s*Tech', model=r'5\d{3}[AB]')
+@register(manufacturer=r'Pico\s*Tech', model=r'5\d{3}[ABD]')
 class PicoScope5000A(PicoScopeApi):
 
     MAX_VALUE_8BIT = 32512

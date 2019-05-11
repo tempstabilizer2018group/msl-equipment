@@ -4,11 +4,36 @@ This example outputs a custom waveform and records the waveform on Channel A.
 The output of the AWG must be connected to Channel A.
 """
 
+import msl.equipment.resources.picotech.picoscope
+import msl.equipment
+
 # this "if" statement is used so that Sphinx does not execute this script when the docs are being built
 if __name__ == '__main__':
     import numpy as np
 
-    from msl.examples.equipment.resources.picotech.picoscope import record  # import the PicoScope EquipmentRecord
+    record = msl.equipment.EquipmentRecord(
+        manufacturer='Pico Technology',
+        model='5442D',
+        # serial='GQ903/0003',
+        # resolution : :class:`str`, optional
+        # The ADC resolution: 8, 12, 14, 15 or 16Bit. Only used by the PS5000A Series 
+        # and it is ignored for all other PicoScope Series.
+        # ps5000a.PS5000A_DEVICE_RESOLUTION = make_enum([
+        #     "PS5000A_DR_8BIT",
+        #     "PS5000A_DR_12BIT",
+        #     "PS5000A_DR_14BIT",
+        #     "PS5000A_DR_15BIT",
+        #     "PS5000A_DR_16BIT",
+        # ])
+        connection=msl.equipment.ConnectionRecord(
+            backend=msl.equipment.Backend.MSL,
+            address='SDK::ps5000a',
+            # properties={'open_async': True},  # opening in async mode is done in the properties
+            properties=dict(
+                resolution='16bit',
+            )
+        )
+    )
 
     print('Example :: Acquire AWG custom waveform')
 

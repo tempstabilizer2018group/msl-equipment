@@ -4,12 +4,37 @@ This example records a sine-wave that is created from the Arbitrary Waveform Gen
 The output of the AWG must be connected to Channel A.
 """
 
+import msl.equipment.resources.picotech.picoscope
+import msl.equipment
+
 # this "if" statement is used so that Sphinx does not execute this script when the docs are being built
 if __name__ == '__main__':
 
     import numpy as np
 
-    from msl.examples.equipment.resources.picotech.picoscope import record  # import the PicoScope EquipmentRecord
+    record = msl.equipment.EquipmentRecord(
+        manufacturer='Pico Technology',
+        model='5442D',
+        # serial='GQ903/0003',
+        # resolution : :class:`str`, optional
+        # The ADC resolution: 8, 12, 14, 15 or 16Bit. Only used by the PS5000A Series 
+        # and it is ignored for all other PicoScope Series.
+        # ps5000a.PS5000A_DEVICE_RESOLUTION = make_enum([
+        #     "PS5000A_DR_8BIT",
+        #     "PS5000A_DR_12BIT",
+        #     "PS5000A_DR_14BIT",
+        #     "PS5000A_DR_15BIT",
+        #     "PS5000A_DR_16BIT",
+        # ])
+        connection=msl.equipment.ConnectionRecord(
+            backend=msl.equipment.Backend.MSL,
+            address='SDK::ps5000a',
+            # properties={'open_async': True},  # opening in async mode is done in the properties
+            properties=dict(
+                resolution='16bit',
+            )
+        )
+    )
 
     print('Example :: Acquire AWG internal waveform')
 
@@ -17,7 +42,8 @@ if __name__ == '__main__':
     scope.set_channel('A', scale='10V')  # enable Channel A and set the voltage range to be +/-10V
     dt, num_samples = scope.set_timebase(1e-6, 100e-6)  # sample the voltage on Channel A every 1 us, for 100 us
     scope.set_trigger('A', 1.0, timeout=-1)  # use Channel A as the trigger source at 1V, wait forever for a trigger event
-    scope.set_sig_gen_builtin_v2(start_frequency=10e3, pk_to_pk=2.0, offset_voltage=0.4)  # create a sine wave
+    # scope.set_sig_gen_builtin_v2(start_frequency=10e3, pk_to_pk=2.0, offset_voltage=0.4)  # create a sine wave
+    scope.set_sig_gen_builtin_v2(start_frequency=10e3, stop_frequency=20e3, increment=1e3, pk_to_pk=2.0, offset_voltage=0.4)  # create a sine wave
     scope.run_block()  # start acquisition
     scope.wait_until_ready()  # wait until all requested samples are collected
     scope.set_data_buffer('A')  # set the data buffer for Channel A
