@@ -50,6 +50,11 @@ class PS2000Range(IntEnum):
     R_MAX   = 12
 
 
+class PS2000Coupling(IntEnum):
+    AC = 0
+    DC = 1
+
+
 class PS2000TimeUnits(IntEnum):
     FS  = 0
     PS  = 1

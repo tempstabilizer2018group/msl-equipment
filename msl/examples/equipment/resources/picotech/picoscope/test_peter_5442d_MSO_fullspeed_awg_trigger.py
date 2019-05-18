@@ -1,6 +1,8 @@
 
 
+import time
 import logging
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +32,6 @@ if __name__ == '__main__':
             )
         )
     )
-
 
     streaming_done = False
     g_samples = 0
@@ -89,9 +90,23 @@ if __name__ == '__main__':
     scope.set_data_buffer('A')  # set the data buffer for Channel A
     scope.run_streaming(auto_stop=False)  # start streaming mode
     print('current_power_source: ' + scope.current_power_source())
+    time_next_plot_s = time.time() + 5.0
     while not streaming_done:
         scope.wait_until_ready()  # wait until the latest streaming values are ready
         scope.get_streaming_latest_values(my_streaming_ready)  # get the latest streaming values
+        if True:
+            if time_next_plot_s > time.time():
+                time_next_plot_s += 5.0
+                idx_start = g_start_index
+                idx_end = idx_start+200
+                if idx_end > len(scope.channel['A'].buffer):
+                    continue
+                # idx_end = g_start_index+g_num_samples
+                plt.plot(list(range(idx_start, idx_end)), scope.channel['A'].buffer[idx_start:idx_end])
+                filename = __file__.replace('.py', '_{:12.1f}.png'.format(time_next_plot_s))
+                plt.savefig(fname=filename)
+                plt.clf()
+
         if True:
             if g_triggered > 0:
                 SPAN = 10

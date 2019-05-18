@@ -358,8 +358,30 @@ class PicoScope(ConnectionSDK):
         n_pre = int(round(pre_trigger / self._sampling_interval))  # don't use self._streaming_sampling_interval
         n_post = self._num_samples - n_pre
 
-        interval = self._run_streaming(self._streaming_sampling_interval, self._streaming_time_units,
-                                       n_pre, n_post, auto_stop, factor, ratio_mode)
+        if self.IS_PS2000:
+            # ('ps2000_run_streaming_ns', 'RunStreamingNs', c_int16, 'errcheck_zero',
+            # [(c_int16, 'int16_t', 'handle'),
+            # (c_uint32, 'uint32_t', 'sample_interval'),
+            # (c_enum, 'PS2000_TIME_UNITS', 'time_units'),
+            # (c_uint32, 'uint32_t', 'max_samples'),
+            # (c_int16, 'int16_t', 'auto_stop'),
+            # (c_uint32, 'uint32_t', 'noOfSamplesPerAggregate'),
+            # (c_uint32, 'uint32_t', 'overview_buffer_size')]
+            # ),
+
+            # def run_streaming_ns(self, sample_interval, time_units, max_samples, auto_stop, no_of_samples_per_aggregate, overview_buffer_size):
+            interval = self.run_streaming_ns(
+                sample_interval=self._streaming_sampling_interval,
+                time_units=self._streaming_time_units,
+                max_samples=self._num_samples, # self._max_samples,
+                auto_stop=auto_stop,
+                no_of_samples_per_aggregate=1, # between 1 and max_samples
+                overview_buffer_size=15000 #  Maximum 1000000
+            )
+
+        else:
+            interval = self._run_streaming(self._streaming_sampling_interval, self._streaming_time_units,
+                                        n_pre, n_post, auto_stop, factor, ratio_mode)
 
         if interval != self._streaming_sampling_interval:
             time_factor = 10**(3*self._streaming_time_units) * 1e-15
@@ -456,7 +478,11 @@ class PicoScope(ConnectionSDK):
             self.raise_exception('Must call set_channel(...) before setting the timebase')
 
         self._oversample = oversample
-        self._timebase_index = int(round(self._get_timebase_index(float(dt))))
+        if self.IS_PS2000:
+            FASTEST_TIMEBASE = 1
+            self._timebase_index = FASTEST_TIMEBASE
+        else:
+            self._timebase_index = int(round(self._get_timebase_index(float(dt))))
         num_samples_requested = int(round(duration/dt))
         if self.IS_PS2000 or self.IS_PS3000:
             ret = self.get_timebase(self._timebase_index, num_samples_requested, oversample)
