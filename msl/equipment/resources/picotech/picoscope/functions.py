@@ -2706,6 +2706,13 @@ ps5000aApi_funcptrs = [
       (POINTER(c_int32), 'int32_t*', 'maxSamples'),
       (c_uint32, 'uint32_t', 'segmentIndex')]
      ),
+    ('ps5000aGetMinimumTimebaseStateless', 'GetMinimumTimebaseStateless', PICO_STATUS, 'errcheck_api',
+     [(c_int16, 'int16_t', 'handle'),
+      (c_enum, 'PS5000A_CHANNEL', 'channel'),
+      (POINTER(c_uint32), 'uint32_t*', 'timebase'),
+      (POINTER(c_double), 'double*', 'timeIntervalNanoseconds'),
+      (c_enum, 'PS5000A_DEVICE_RESOLUTION', 'resolution')]
+     ),
     ('ps5000aGetTriggerInfoBulk', 'GetTriggerInfoBulk', PICO_STATUS, 'errcheck_api',
      [(c_int16, 'int16_t', 'handle'),
       (POINTER(PS5000ATriggerInfo), 'PS5000A_TRIGGER_INFO*', 'triggerInfo'),

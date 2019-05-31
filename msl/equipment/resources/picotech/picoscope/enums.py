@@ -1467,6 +1467,16 @@ class PS5000AChannel(IntEnum):
     AUX                 = 5
     MAX_TRIGGER_SOURCES = 6
 
+class PS5000AChannelFlags(IntEnum):
+    A                   = 1
+    B                   = 2
+    C                   = 3
+    D                   = 8
+    Port0               = 65536
+    Port1               = 131072
+    Port2               = 262144
+    Port3               = 524288
+
 
 class PS5000AChannelBufferIndex(IntEnum):
     A_MAX = 0

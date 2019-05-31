@@ -4,7 +4,7 @@ Base class for the PicoScopes that have a header file which ends with \*Api.h.
 Namely, ps2000aApi, ps3000aApi, ps4000Api, ps4000aApi, ps5000Api, ps5000aApi and ps6000Api.
 """
 from ctypes import (c_int8, c_int16, c_uint16, c_int32, c_uint32, c_int64,
-                    c_float, c_void_p, byref, cast, POINTER)
+                    c_float, c_double, c_void_p, byref, cast, POINTER)
 import numpy as np
 
 from msl.equipment.resources.picotech import c_enum
@@ -226,6 +226,18 @@ class PicoScopeApi(PicoScope):
         The `oversample` argument is only used by ps4000, ps5000 and ps6000.
         """
         return self.get_timebase2(timebase, num_samples, segment_index, oversample)
+
+    def get_minimum_timebase(self, resolution, channels):
+        timebase = c_uint32()
+        time_interval_nanoseconds = c_double()
+        self.GetMinimumTimebaseStateless(self._handle,
+                channels, 
+                byref(timebase), 
+                byref(time_interval_nanoseconds),
+                resolution)
+        # timebase_: 3
+        # time_interval_nanoseconds_: 8e-09
+        return timebase, time_interval_nanoseconds
 
     def get_timebase2(self, timebase, num_samples=0, segment_index=0, oversample=0):
         """

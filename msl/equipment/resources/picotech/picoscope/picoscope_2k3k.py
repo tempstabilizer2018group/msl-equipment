@@ -38,7 +38,7 @@ class PicoScope2k3k(PicoScope):
         elif open_unit_async:
             self.open_unit_async()
 
-        raise PicoTechError('The {} class has not yet been tested with a PicoScope'.format(self.__class__.__name__))
+        # raise PicoTechError('The {} class has not yet been tested with a PicoScope'.format(self.__class__.__name__))
 
     def errcheck_zero(self, result, func, args):
         """If the SDK function returns 0 then raise an exception."""
