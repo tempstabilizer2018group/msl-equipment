@@ -118,7 +118,7 @@ ps2000_funcptrs = [
     ('ps2000_flash_led', 'FlashLed', c_int16, 'errcheck_zero',
      [(c_int16, 'int16_t', 'handle')]
      ),
-    ('ps2000_get_streaming_last_values', 'GetStreamingLastValues', c_int16, 'errcheck_zero',
+    ('ps2000_get_streaming_last_values', 'GetStreamingLastValues', c_int16, None, # removed 'errcheck_zero': Accoring to the manual, this method may return 0 or 1
      [(c_int16, 'int16_t', 'handle'),
       (GetOverviewBuffersMaxMin, 'GetOverviewBuffersMaxMin', 'lpGetOverviewBuffersMaxMin')]
      ),

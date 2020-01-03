@@ -94,7 +94,15 @@ class PicoScope2k3k(PicoScope):
             if self._handle is None:
                 msg = 'A connection has not been opened yet. Call open_unit()'
                 self.raise_exception(msg)
-            error_code = int(self.get_unit_info(6))  # passing in line=6 returns one of the error codes
+            # passing in line=6 returns one of the error codes
+            error_code = self.get_unit_info(6)
+            if isinstance(error_code, str):
+                if error_code.startswith('ERROR_CODE: '):
+                    # 'error_code=ERROR_CODE: 0'
+                    error_code = error_code[len('ERROR_CODE: '):]
+            # error_code='0'
+            error_code = int(error_code)
+            # error_code=0
 
         error_name, message = ERROR_CODES.get(error_code, ('UnhandledError', 'Error code 0x{:x}'.format(error_code)))
         message = message.format(
@@ -119,7 +127,7 @@ class PicoScope2k3k(PicoScope):
         running. You must call :meth:`run_streaming_ns` beforehand to set up fast
         streaming.
         """
-        return self.GetStreamingValues(self._handle, lp_get_overview_buffers_max_min)
+        return self.GetStreamingLastValues(self._handle, lp_get_overview_buffers_max_min)
 
     def get_streaming_values(self, no_of_values, no_of_samples_per_aggregate):
         """

@@ -94,3 +94,22 @@ class PicoScope2000(PicoScope2k3k):
         return self.sdk.ps2000_set_sig_gen_built_in(self._handle, offset_voltage, pk_to_pk, wave_type,
                                                     start_frequency, stop_frequency, increment, dwell_time,
                                                     sweep_type, sweeps)
+
+    def _get_timebase_index(self, dt):
+        """
+        See the manual for the sample interval formula as a function of device resolution.
+        
+        Manual for ps2000_get_timebase(): Call this function with increasing values of timebase,
+        starting from 0, until you find a timebase with a sampling interval
+        and sample count close enough to your requirements.
+        """
+        num_samples_requested = 1000
+        oversample = 0
+        for timebase_index in range(1, 100):
+            # def get_timebase(self, timebase, no_of_samples, oversample=0)
+            ret = self.get_timebase(timebase_index, num_samples_requested, oversample)
+            time_interval, max_samples, time_units = ret
+            if time_interval*1.1 > dt:
+                return timebase_index
+        raise Exception('No matching timebase_index found!')
+
